@@ -4,6 +4,7 @@ import { parseThreatReport } from './services/geminiService';
 import { ParseState } from './types';
 import { ResultView } from './components/ResultView';
 import { ApiKeyModal } from './components/ApiKeyModal';
+import { SystemInstructionsModal } from './components/SystemInstructionsModal';
 import { 
   ShieldCheck, 
   Zap, 
@@ -16,15 +17,16 @@ import {
   Key,
   Info,
   Terminal,
-  Activity
+  Activity,
+  ArrowRight
 } from 'lucide-react';
 
 // Tactical Loading Skeleton Component
 const TacticalSkeleton = () => (
   <div className="w-full h-full flex flex-col items-center justify-center space-y-4 animate-pulse">
-    <div className="w-full h-2 bg-slate-800/50 rounded-none"></div>
-    <div className="w-3/4 h-2 bg-slate-800/50 rounded-none"></div>
-    <div className="w-5/6 h-2 bg-slate-800/50 rounded-none"></div>
+    <div className="w-full h-px bg-slate-800 rounded-none"></div>
+    <div className="w-3/4 h-px bg-slate-800 rounded-none"></div>
+    <div className="w-5/6 h-px bg-slate-800 rounded-none"></div>
     <div className="flex items-center space-x-2 mt-4 text-[#FF1F7D] font-mono text-xs tracking-widest uppercase">
       <Activity className="w-4 h-4 animate-bounce" />
       <span>Processing Intelligence...</span>
@@ -35,6 +37,7 @@ const TacticalSkeleton = () => (
 const App: React.FC = () => {
   const [inputText, setInputText] = useState('Input: Operation Alpha\nTarget: Sector 7\n\nSuspected APT activity detected originating from 192.168.1.5 and beaconing to malicious-domain[.]com.'); // Tactical Mock Data
   const [showKeyModal, setShowKeyModal] = useState(false);
+  const [showInstructions, setShowInstructions] = useState(false);
   const [hasKey, setHasKey] = useState<boolean | null>(null);
   const [state, setState] = useState<ParseState>({
     isParsing: false,
@@ -139,72 +142,74 @@ Potential Victims Identified:
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#050505] selection:bg-[#FF1F7D]/30 selection:text-pink-100">
+    <div className="min-h-screen flex flex-col selection:bg-[#FF1F7D]/30 selection:text-pink-100 relative">
       {showKeyModal && (
         <ApiKeyModal 
           onActivate={handleActivate} 
           onClose={() => setShowKeyModal(false)} 
         />
       )}
+
+      {showInstructions && (
+        <SystemInstructionsModal onClose={() => setShowInstructions(false)} />
+      )}
       
-      {/* Header (Command Bar) */}
-      <header className="border-b border-white/10 bg-black/60 backdrop-blur-xl sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <div className="p-2 border border-[#FF1F7D]/50 bg-[#FF1F7D]/10">
-              <ShieldCheck className="w-6 h-6 text-[#FF1F7D]" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-oswald font-bold tracking-tight text-white uppercase flex items-center">
-                CYNTHIA<span className="text-[#FF1F7D] ml-1">.OS</span>
-              </h1>
-              <div className="flex items-center text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest mt-0.5">
-                <Cpu className="w-3 h-3 mr-1 text-[#FF1F7D]" /> Tactical CTI // Gemini 3 Pro
-              </div>
-            </div>
+      {/* Header (Command Bar) - Absolute & Transparent */}
+      <header className="absolute top-0 w-full z-50 pt-6 px-6 sm:px-10">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <h1 className="text-xl font-oswald font-bold tracking-tight text-white uppercase flex items-center">
+              <span className="text-[#FF1F7D] mr-2">{">_"}</span> 
+              CYNTHIA<span className="text-[#FF1F7D]">.OS</span> 
+              <span className="text-slate-600 mx-2">//</span> 
+              PARSER
+            </h1>
           </div>
           
           {/* Status Pill Logic */}
           <div className="flex items-center space-x-6">
              <div 
                onClick={() => setShowKeyModal(true)}
-               className={`hidden sm:flex items-center space-x-2 text-[10px] font-mono font-bold px-4 py-1.5 border cursor-pointer transition-all hover:scale-95 active:scale-90 ${
+               className={`hidden sm:flex items-center space-x-2 text-[10px] font-mono font-bold px-4 py-1.5 border rounded-full cursor-pointer transition-all hover:scale-95 active:scale-90 ${
                  hasKey 
-                 ? 'bg-[#00E599]/10 border-[#00E599] text-[#00E599] shadow-[0_0_10px_rgba(0,229,153,0.2)]' 
-                 : 'bg-red-500/10 border-red-500 text-red-500 animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.2)]'
+                 ? 'bg-[#00E599]/5 border-[#00E599]/30 text-[#00E599]' 
+                 : 'bg-red-500/5 border-red-500/30 text-red-500 animate-pulse'
                }`}
              >
-              <div className={`w-1.5 h-1.5 rounded-none mr-2 ${hasKey ? 'bg-[#00E599]' : 'bg-red-500'}`}></div>
-              {hasKey ? 'SYSTEM ONLINE' : 'API DISCONNECTED -- CONFIGURE NOW'}
+              <div className={`w-1.5 h-1.5 rounded-full mr-2 ${hasKey ? 'bg-[#00E599]' : 'bg-red-500'}`}></div>
+              {hasKey ? 'SYSTEM ONLINE' : 'API DISCONNECTED -- CONFIGURE'}
             </div>
-            <button className="text-slate-500 hover:text-[#FF1F7D] transition-colors">
-              <History className="w-5 h-5" />
-            </button>
           </div>
         </div>
       </header>
 
       {/* Main Layout: The Active Hero */}
-      <main className="flex-1 max-w-7xl mx-auto w-full px-6 py-10 space-y-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+      <main className="flex-1 max-w-7xl mx-auto w-full px-6 pt-32 pb-10 space-y-8">
+        
+        {/* Massive Hero Header */}
+        <div className="flex flex-col items-center justify-center text-center space-y-4 mb-16 animate-in slide-in-from-top-10 fade-in duration-700">
+           <div className="text-[10px] font-mono font-bold text-[#FF1F7D] tracking-[0.3em] uppercase bg-[#FF1F7D]/5 px-3 py-1 border border-[#FF1F7D]/20">
+              Tactical Intelligence Interface
+           </div>
+           <h1 className="text-6xl md:text-8xl font-oswald font-bold text-white uppercase tracking-tighter leading-none">
+              INTEL <span className="text-[#FF1F7D]">EXTRACTION</span>
+           </h1>
+           <p className="max-w-xl text-xs font-mono text-slate-500 leading-relaxed uppercase tracking-wide">
+              Deploy generative AI to semantically map unstructured threat reports <br className="hidden md:block" /> to STIX 2.1 entities.
+           </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
           {/* Left Panel: Tactical Input Console */}
           <div className="lg:col-span-5 space-y-6">
-            <div className="space-y-1">
-              <div className="flex items-center space-x-2 text-xs font-mono font-bold text-[#FF1F7D] uppercase tracking-widest mb-1">
-                <Lock className="w-3 h-3" /> Secure Channel
-              </div>
-              <h2 className="text-4xl font-oswald font-bold text-white uppercase leading-none">
-                Intel <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF1F7D] to-purple-600">Extraction</span>
-              </h2>
-            </div>
 
-            {/* Smoked Obsidian Panel */}
-            <div className="bg-black/60 backdrop-blur-xl border border-white/10 shadow-2xl overflow-hidden group">
+            {/* Smoked Obsidian Panel - Sharp Corners */}
+            <div className="bg-black/40 backdrop-blur-sm border border-white/10 shadow-2xl overflow-hidden group rounded-none">
               <div className="flex items-center justify-between p-3 border-b border-white/10 bg-black/40">
                 <div className="flex items-center space-x-2">
                   <Terminal className="w-4 h-4 text-[#FF1F7D]" />
-                  <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-slate-400">Raw Data Input</span>
+                  <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-slate-400">Input Stream</span>
                 </div>
                 <div className="flex items-center space-x-4">
                   <button 
@@ -224,61 +229,48 @@ Potential Victims Identified:
               </div>
               
               {/* Tactical Input */}
-              <div className="relative">
+              <div className="relative group">
                 <textarea
                   value={inputText}
                   onChange={(e) => setInputText(e.target.value)}
-                  placeholder="AWAITING INPUT..."
-                  className="w-full h-[400px] p-6 bg-transparent text-slate-300 placeholder-slate-700 focus:outline-none resize-none font-mono text-xs leading-relaxed custom-scrollbar border-b-2 border-transparent focus:border-[#FF1F7D] transition-colors duration-300"
+                  placeholder="ENTER THREAT REPORT OR PASTE DATA..."
+                  className="w-full h-[400px] p-6 bg-transparent text-slate-300 placeholder-slate-600 focus:outline-none resize-none font-mono text-xs leading-relaxed custom-scrollbar border-l-2 border-transparent focus:border-[#FF1F7D] transition-colors duration-300"
                 />
               </div>
 
-              <div className="p-5 border-t border-white/10 bg-black/40 flex items-center justify-between">
+              <div className="p-4 border-t border-white/10 bg-black/60 flex items-center justify-between gap-4">
                 <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept=".txt,.md,.json" className="hidden" />
-                <div className="flex space-x-3">
+                
+                <div className="flex space-x-1">
                   <button 
                     onClick={() => fileInputRef.current?.click()}
-                    className="p-3 bg-transparent border border-white/10 hover:border-[#FF1F7D] text-slate-400 hover:text-[#FF1F7D] transition-all active:scale-95"
+                    className="p-3 bg-transparent border border-white/10 hover:border-[#FF1F7D] text-slate-400 hover:text-[#FF1F7D] transition-all rounded-none"
                     title="Upload"
                   >
-                    <CloudUpload className="w-5 h-5" />
-                  </button>
-                  <button 
-                    onClick={() => setShowKeyModal(true)}
-                    className={`p-3 border transition-all active:scale-95 ${hasKey ? 'border-[#00E599]/30 text-[#00E599]' : 'border-white/10 text-slate-400 hover:border-[#FF1F7D]'}`}
-                    title="Config"
-                  >
-                    <Key className="w-5 h-5" />
+                    <CloudUpload className="w-4 h-4" />
                   </button>
                 </div>
 
-                {/* Primary Action Button */}
+                {/* Primary Action Button - Styled like "Input Stream" bar */}
                 <button 
                   onClick={handleParse}
                   disabled={state.isParsing || !inputText.trim()}
-                  className={`flex-1 ml-6 py-4 font-oswald font-bold text-sm tracking-[0.1em] uppercase transition-all duration-100 flex items-center justify-center space-x-3 ${
+                  className={`flex-1 py-3 px-6 font-oswald font-bold text-sm tracking-[0.1em] uppercase transition-all duration-100 flex items-center justify-between group rounded-none border ${
                     state.isParsing || !inputText.trim() 
-                    ? 'bg-slate-900 text-slate-600 cursor-not-allowed border border-white/5' 
-                    : 'bg-[#FF1F7D] text-white hover:bg-[#D41464] active:scale-[0.98] shadow-[0_0_20px_rgba(255,31,125,0.3)]'
+                    ? 'bg-black border-white/10 text-slate-600 cursor-not-allowed' 
+                    : 'bg-black border-[#FF1F7D] text-[#FF1F7D] hover:bg-[#FF1F7D] hover:text-black'
                   }`}
                 >
                   {state.isParsing ? (
-                    <span className="animate-pulse">EXECUTION IN PROGRESS...</span>
+                    <span className="animate-pulse">PROCESSING...</span>
                   ) : (
                     <>
-                      <Zap className="w-4 h-4 fill-current" />
-                      <span>EXECUTE PARSE</span>
+                      <span>EXECUTE</span>
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </>
                   )}
                 </button>
               </div>
-            </div>
-
-            <div className="flex items-start space-x-3 opacity-60">
-              <Info className="w-4 h-4 text-slate-500 mt-0.5" />
-              <p className="text-[10px] text-slate-500 font-mono leading-relaxed">
-                PRIVACY NOTICE: Reports processed securely via Gemini API. No server-side retention.
-              </p>
             </div>
 
             {state.error && (
@@ -292,17 +284,17 @@ Potential Victims Identified:
           {/* Right Panel: Output Console */}
           <div className="lg:col-span-7 h-full min-h-[600px]">
             {state.isParsing ? (
-               <div className="h-full bg-black/60 backdrop-blur-xl border border-white/10 flex items-center justify-center">
+               <div className="h-full bg-black/20 backdrop-blur-sm border border-white/10 flex items-center justify-center rounded-none">
                   <TacticalSkeleton />
                </div>
             ) : state.result ? (
               <ResultView data={state.result} />
             ) : (
-              <div className="h-full flex flex-col items-center justify-center border border-dashed border-white/10 bg-white/[0.02] opacity-50">
-                <div className="w-24 h-24 border border-white/10 flex items-center justify-center mb-6">
-                  <Activity className="w-10 h-10 text-slate-700" />
+              <div className="h-full flex flex-col items-center justify-center border border-dashed border-white/5 bg-white/[0.01] rounded-none">
+                <div className="w-20 h-20 border border-white/5 flex items-center justify-center mb-6 rounded-none">
+                  <Activity className="w-8 h-8 text-slate-800" />
                 </div>
-                <h3 className="text-xl font-oswald font-bold text-slate-600 uppercase tracking-widest">Awaiting Command</h3>
+                <h3 className="text-xl font-oswald font-bold text-slate-700 uppercase tracking-widest">Awaiting Command</h3>
                 {!hasKey && (
                   <button 
                     onClick={() => setShowKeyModal(true)}
@@ -320,15 +312,17 @@ Potential Victims Identified:
       {/* Footer (Legal Deck) */}
       <footer className="border-t border-white/10 py-8 bg-black">
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="text-[10px] text-slate-500 font-mono">
-             <span className="block mb-2 text-slate-400">Privacy Notice: Reports are processed by the Gemini API. Do not upload internal PII or classified corporate assets. The system does not cache or store reports after the session ends.</span>
+          <div className="text-[10px] text-slate-600 font-mono uppercase tracking-wide">
+             <span className="block mb-2 text-slate-700">Privacy Notice: Reports are processed by the Gemini API. No server-side retention.</span>
              <span>© 2026 Cynthia Schomp | cynthiaschomp.com</span>
           </div>
-          <div className="flex space-x-4 text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest">
-            <a href="#" className="hover:text-[#FF1F7D] transition-colors">Privacy Policy</a>
-            <span className="text-slate-700">|</span>
+          <div className="flex space-x-6 text-[10px] font-mono font-bold text-slate-600 uppercase tracking-widest">
+            <button onClick={() => setShowInstructions(true)} className="hover:text-[#FF1F7D] transition-colors text-left">System Instructions</button>
+            <span className="text-slate-800">|</span>
+            <a href="#" className="hover:text-[#FF1F7D] transition-colors">Privacy</a>
+            <span className="text-slate-800">|</span>
             <a href="#" className="hover:text-[#FF1F7D] transition-colors">TOS</a>
-            <span className="text-slate-700">|</span>
+            <span className="text-slate-800">|</span>
             <a href="#" className="hover:text-[#FF1F7D] transition-colors">Legal</a>
           </div>
         </div>

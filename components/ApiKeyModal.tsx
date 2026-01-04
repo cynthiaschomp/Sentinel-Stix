@@ -10,7 +10,7 @@ interface StepProps {
 
 const Step: React.FC<StepProps> = ({ number, title, children }) => (
   <div className="flex space-x-5 group">
-    <div className="flex-shrink-0 w-10 h-10 border border-white/20 bg-black/50 flex items-center justify-center text-sm font-oswald font-bold text-[#FF1F7D] group-hover:border-[#FF1F7D] transition-colors">
+    <div className="flex-shrink-0 w-10 h-10 border border-white/20 bg-black/50 flex items-center justify-center text-sm font-oswald font-bold text-[#FF1F7D] group-hover:border-[#FF1F7D] transition-colors rounded-none">
       {number}
     </div>
     <div className="pt-1">
@@ -30,7 +30,7 @@ interface Props {
 export const ApiKeyModal: React.FC<Props> = ({ onActivate, onClose }) => {
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm">
-      <div className="max-w-md w-full bg-[#050505] border border-white/10 shadow-[0_0_50px_rgba(255,31,125,0.1)] animate-in zoom-in-95 duration-200 relative">
+      <div className="max-w-md w-full bg-[#050505] border border-white/10 shadow-[0_0_50px_rgba(255,31,125,0.1)] animate-in zoom-in-95 duration-200 relative rounded-none">
         {onClose && (
           <button 
             onClick={onClose}
@@ -41,7 +41,7 @@ export const ApiKeyModal: React.FC<Props> = ({ onActivate, onClose }) => {
         )}
         
         <div className="px-8 py-8 border-b border-white/10 flex items-center space-x-4">
-          <div className="p-2 border border-[#FF1F7D] bg-[#FF1F7D]/10">
+          <div className="p-2 border border-[#FF1F7D] bg-[#FF1F7D]/10 rounded-none">
             <ShieldAlert className="w-6 h-6 text-[#FF1F7D]" />
           </div>
           <h2 className="text-2xl font-oswald font-bold text-white tracking-widest uppercase">
@@ -67,14 +67,14 @@ export const ApiKeyModal: React.FC<Props> = ({ onActivate, onClose }) => {
           <div className="pt-4 space-y-4">
             <button 
               onClick={onActivate}
-              className="w-full py-4 bg-[#FF1F7D] text-white hover:bg-[#D41464] font-oswald font-bold text-sm uppercase tracking-[0.2em] transition-all active:scale-[0.98] shadow-[0_0_15px_rgba(255,31,125,0.4)] flex items-center justify-center space-x-3"
+              className="w-full py-4 bg-[#FF1F7D] text-black hover:bg-white font-oswald font-bold text-sm uppercase tracking-[0.2em] transition-all active:scale-[0.98] shadow-[0_0_15px_rgba(255,31,125,0.4)] flex items-center justify-center space-x-3 rounded-none"
             >
               <Key className="w-4 h-4" />
               <span>Initiate Handshake</span>
             </button>
             <button 
               onClick={() => (onClose ? onClose() : (window as any).location.reload())}
-              className="w-full py-3 bg-transparent border border-white/10 hover:border-white/30 text-slate-400 hover:text-white font-mono font-bold text-xs uppercase tracking-widest transition-all"
+              className="w-full py-3 bg-transparent border border-white/10 hover:border-white/30 text-slate-400 hover:text-white font-mono font-bold text-xs uppercase tracking-widest transition-all rounded-none"
             >
               Cancel Protocol
             </button>

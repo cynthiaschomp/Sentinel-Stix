@@ -52,16 +52,16 @@ export const ResultView: React.FC<Props> = ({ data }) => {
     <div className="space-y-6 animate-in fade-in duration-700">
       {/* Control Bar */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
-        <div className="flex bg-black/40 p-1 border border-white/10">
+        <div className="flex bg-black/40 border border-white/10 p-0.5">
           <button 
             onClick={() => setView('visual')}
-            className={`px-6 py-2 text-xs font-mono font-bold transition uppercase tracking-widest ${view === 'visual' ? 'bg-[#FF1F7D] text-white' : 'text-slate-500 hover:text-white'}`}
+            className={`px-6 py-2 text-[10px] font-mono font-bold transition uppercase tracking-widest ${view === 'visual' ? 'bg-[#FF1F7D] text-black' : 'text-slate-500 hover:text-white'}`}
           >
             Dashboard
           </button>
           <button 
             onClick={() => setView('json')}
-            className={`px-6 py-2 text-xs font-mono font-bold transition uppercase tracking-widest ${view === 'json' ? 'bg-[#FF1F7D] text-white' : 'text-slate-500 hover:text-white'}`}
+            className={`px-6 py-2 text-[10px] font-mono font-bold transition uppercase tracking-widest ${view === 'json' ? 'bg-[#FF1F7D] text-black' : 'text-slate-500 hover:text-white'}`}
           >
             JSON
           </button>
@@ -70,8 +70,8 @@ export const ResultView: React.FC<Props> = ({ data }) => {
         <div className="flex items-center space-x-3">
           <button 
             onClick={() => setIsDefanged(!isDefanged)}
-            className={`flex items-center space-x-2 px-4 py-2 transition border text-xs font-mono font-bold uppercase tracking-wider ${
-              isDefanged ? 'bg-[#00E599]/10 border-[#00E599] text-[#00E599]' : 'bg-red-500/10 border-red-500 text-red-500'
+            className={`flex items-center space-x-2 px-4 py-2 transition border text-[10px] font-mono font-bold uppercase tracking-wider ${
+              isDefanged ? 'bg-[#00E599]/5 border-[#00E599]/50 text-[#00E599]' : 'bg-red-500/5 border-red-500/50 text-red-500'
             }`}
           >
             {isDefanged ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
@@ -83,14 +83,14 @@ export const ResultView: React.FC<Props> = ({ data }) => {
             className="flex items-center space-x-2 px-4 py-2 bg-transparent hover:bg-white/5 border border-white/10 text-slate-300 transition active:scale-95"
           >
             {copied ? <Check className="w-3 h-3 text-[#00E599]" /> : <Copy className="w-3 h-3" />}
-            <span className="text-xs font-mono font-bold uppercase tracking-wider">{copied ? 'COPIED' : 'COPY'}</span>
+            <span className="text-[10px] font-mono font-bold uppercase tracking-wider">{copied ? 'COPIED' : 'COPY'}</span>
           </button>
           <button 
             onClick={downloadJson}
-            className="flex items-center space-x-2 px-4 py-2 bg-[#FF1F7D] hover:bg-[#D41464] text-white transition shadow-[0_0_10px_rgba(255,31,125,0.2)] active:scale-95"
+            className="flex items-center space-x-2 px-4 py-2 bg-[#FF1F7D] hover:bg-[#D41464] text-black transition shadow-[0_0_10px_rgba(255,31,125,0.2)] active:scale-95"
           >
             <Download className="w-3 h-3" />
-            <span className="text-xs font-mono font-bold uppercase tracking-wider">EXPORT</span>
+            <span className="text-[10px] font-mono font-bold uppercase tracking-wider">EXPORT</span>
           </button>
         </div>
       </div>
@@ -106,14 +106,14 @@ export const ResultView: React.FC<Props> = ({ data }) => {
             </div>
 
             {/* TTPs Panel */}
-            <div className="bg-black/60 backdrop-blur-xl border border-white/10 p-6">
+            <div className="bg-black/40 backdrop-blur-sm border border-white/10 p-6 rounded-none">
               <div className="flex items-center space-x-2 mb-4 border-b border-white/5 pb-2">
                 <BookOpen className="w-4 h-4 text-slate-400" />
                 <h3 className="text-sm font-oswald font-bold text-white uppercase tracking-widest">Tactics & Techniques</h3>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {data.ttps.map((ttp, idx) => (
-                  <div key={idx} className="bg-white/5 border border-white/5 p-4 hover:border-[#FF1F7D]/50 transition group">
+                  <div key={idx} className="bg-white/5 border border-white/5 p-4 hover:border-[#FF1F7D]/50 transition group rounded-none">
                     <span className="text-[10px] font-mono font-bold bg-[#FF1F7D]/20 text-[#FF1F7D] px-2 py-0.5 border border-[#FF1F7D]/30">{ttp.technique_id}</span>
                     <h4 className="text-xs font-bold text-slate-200 mt-2 font-mono">{ttp.technique_name}</h4>
                     <p className="text-[10px] text-slate-500 mt-1 line-clamp-2 font-mono">{ttp.description}</p>
@@ -124,7 +124,7 @@ export const ResultView: React.FC<Props> = ({ data }) => {
             </div>
 
             {/* Indicators Panel */}
-            <div className="bg-black/60 backdrop-blur-xl border border-white/10 p-6">
+            <div className="bg-black/40 backdrop-blur-sm border border-white/10 p-6 rounded-none">
               <div className="flex items-center justify-between mb-4 border-b border-white/5 pb-2">
                 <div className="flex items-center space-x-2">
                   <Activity className="w-4 h-4 text-slate-400" />
@@ -164,7 +164,7 @@ export const ResultView: React.FC<Props> = ({ data }) => {
 
           <div className="lg:col-span-4 space-y-6">
             {/* Charts & Graphs */}
-            <div className="bg-black/60 backdrop-blur-xl border border-white/10 p-6">
+            <div className="bg-black/40 backdrop-blur-sm border border-white/10 p-6 rounded-none">
               <h3 className="text-xs font-oswald font-bold text-slate-400 uppercase tracking-widest mb-6">Telemetry</h3>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
@@ -187,7 +187,7 @@ export const ResultView: React.FC<Props> = ({ data }) => {
                 </div>
                 <div className="space-y-2">
                   {data.relationships.map((rel, idx) => (
-                    <div key={idx} className="p-3 bg-white/[0.02] border border-white/5 text-[10px] font-mono group hover:border-[#FF1F7D]/30 transition">
+                    <div key={idx} className="p-3 bg-white/[0.02] border border-white/5 text-[10px] font-mono group hover:border-[#FF1F7D]/30 transition rounded-none">
                       <div className="flex items-center justify-between">
                         <span className="text-[#3b82f6] font-bold truncate max-w-[80px]">{rel.source}</span>
                         <span className="text-slate-500 uppercase tracking-tighter">--[{rel.relationship_type}]--</span>
@@ -200,7 +200,7 @@ export const ResultView: React.FC<Props> = ({ data }) => {
               </div>
             </div>
 
-            <div className="p-5 border border-[#FF1F7D]/20 bg-[#FF1F7D]/5">
+            <div className="p-5 border border-[#FF1F7D]/20 bg-[#FF1F7D]/5 rounded-none">
               <h4 className="text-[10px] font-oswald font-bold text-[#FF1F7D] uppercase tracking-widest mb-2 flex items-center">
                 <Shield className="w-3 h-3 mr-1" /> Operational Security
               </h4>
@@ -211,7 +211,7 @@ export const ResultView: React.FC<Props> = ({ data }) => {
           </div>
         </div>
       ) : (
-        <div className="relative bg-black/80 backdrop-blur-xl border border-white/10 p-8 font-mono text-xs overflow-auto max-h-[700px] custom-scrollbar">
+        <div className="relative bg-black/80 backdrop-blur-xl border border-white/10 p-8 font-mono text-xs overflow-auto max-h-[700px] custom-scrollbar rounded-none">
           <pre className="text-[#00E599] leading-relaxed whitespace-pre-wrap">
             {JSON.stringify(isDefanged ? {
               ...data,
@@ -225,17 +225,17 @@ export const ResultView: React.FC<Props> = ({ data }) => {
 };
 
 const EntityCard = ({ icon, title, count, items }: { icon: React.ReactNode, title: string, count: number, items: string[] }) => (
-  <div className="bg-black/60 backdrop-blur-xl border border-white/10 p-5 flex flex-col h-full hover:border-[#FF1F7D]/50 transition group">
+  <div className="bg-black/40 backdrop-blur-sm border border-white/10 p-5 flex flex-col h-full hover:border-[#FF1F7D]/50 transition group rounded-none">
     <div className="flex items-center justify-between mb-4">
       <div className="flex items-center space-x-2">
-        <div className="p-1.5 bg-white/5">{icon}</div>
+        <div className="p-1.5 bg-white/5 rounded-none">{icon}</div>
         <h4 className="text-xs font-oswald font-bold text-slate-400 uppercase tracking-widest group-hover:text-white transition-colors">{title}</h4>
       </div>
-      <span className="bg-white/10 text-white px-2 py-0.5 text-[10px] font-mono font-bold border border-white/10">{count}</span>
+      <span className="bg-white/10 text-white px-2 py-0.5 text-[10px] font-mono font-bold border border-white/10 rounded-none">{count}</span>
     </div>
     <div className="flex flex-wrap gap-1.5">
       {items.slice(0, 4).map((item, i) => (
-        <span key={i} className="text-[10px] font-mono font-bold bg-white/[0.02] text-slate-300 px-2 py-1 border border-white/10 truncate max-w-full group-hover:border-[#FF1F7D]/30 transition-colors">{item}</span>
+        <span key={i} className="text-[10px] font-mono font-bold bg-white/[0.02] text-slate-300 px-2 py-1 border border-white/10 truncate max-w-full group-hover:border-[#FF1F7D]/30 transition-colors rounded-none">{item}</span>
       ))}
       {items.length > 4 && <span className="text-[9px] font-mono font-bold text-slate-600 self-center">+{items.length - 4}</span>}
     </div>
