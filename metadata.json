@@ -1,0 +1,5 @@
+{
+  "name": "Sentinel-STIX Parser",
+  "description": "A high-performance Cyber Threat Intelligence tool that converts unstructured threat reports into structured STIX 2.1 JSON objects using Gemini 3 Pro reasoning.",
+  "requestFramePermissions": []
+}
