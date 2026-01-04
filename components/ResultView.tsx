@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { ExtractionResult, IndicatorType } from '../types';
 import { IndicatorBadge } from './IndicatorBadge';
@@ -21,7 +22,8 @@ export const ResultView: React.FC<Props> = ({ data }) => {
   }, {});
 
   const chartData = Object.entries(indicatorCounts).map(([name, value]) => ({ name, value }));
-  const COLORS = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#6366f1'];
+  // Updated colors to match Neon Pink/Green/Purple/Blue/Orange palette
+  const COLORS = ['#FF1F7D', '#00E599', '#8b5cf6', '#3b82f6', '#f59e0b', '#ef4444'];
 
   const copyToClipboard = () => {
     const output = isDefanged 
@@ -41,35 +43,54 @@ export const ResultView: React.FC<Props> = ({ data }) => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `stix-bundle-${new Date().getTime()}.json`;
+    a.download = `sentinel-intel-${new Date().getTime()}.json`;
     a.click();
     URL.revokeObjectURL(url);
   };
 
   return (
     <div className="space-y-6 animate-in fade-in duration-700">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
-        <div className="flex bg-slate-900 p-1 rounded-xl border border-slate-800">
-          <button onClick={() => setView('visual')} className={`px-4 py-1.5 rounded-lg text-xs font-bold transition uppercase tracking-wider ${view === 'visual' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/40' : 'text-slate-400 hover:text-white'}`}>Dashboard</button>
-          <button onClick={() => setView('json')} className={`px-4 py-1.5 rounded-lg text-xs font-bold transition uppercase tracking-wider ${view === 'json' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/40' : 'text-slate-400 hover:text-white'}`}>STIX JSON</button>
+      {/* Control Bar */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
+        <div className="flex bg-black/40 p-1 border border-white/10">
+          <button 
+            onClick={() => setView('visual')}
+            className={`px-6 py-2 text-xs font-mono font-bold transition uppercase tracking-widest ${view === 'visual' ? 'bg-[#FF1F7D] text-white' : 'text-slate-500 hover:text-white'}`}
+          >
+            Dashboard
+          </button>
+          <button 
+            onClick={() => setView('json')}
+            className={`px-6 py-2 text-xs font-mono font-bold transition uppercase tracking-widest ${view === 'json' ? 'bg-[#FF1F7D] text-white' : 'text-slate-500 hover:text-white'}`}
+          >
+            JSON
+          </button>
         </div>
         
         <div className="flex items-center space-x-3">
           <button 
             onClick={() => setIsDefanged(!isDefanged)}
-            className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg transition border text-xs font-bold ${isDefanged ? 'bg-amber-500/10 border-amber-500/20 text-amber-500' : 'bg-slate-800 border-slate-700 text-slate-400'}`}
+            className={`flex items-center space-x-2 px-4 py-2 transition border text-xs font-mono font-bold uppercase tracking-wider ${
+              isDefanged ? 'bg-[#00E599]/10 border-[#00E599] text-[#00E599]' : 'bg-red-500/10 border-red-500 text-red-500'
+            }`}
           >
-            {isDefanged ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-            <span>{isDefanged ? 'DE-FANGED' : 'RAW INTEL'}</span>
+            {isDefanged ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+            <span>{isDefanged ? 'SAFE MODE' : 'LIVE FIRE'}</span>
           </button>
           
-          <button onClick={copyToClipboard} className="flex items-center space-x-2 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-300 transition border border-slate-700">
-            {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
-            <span className="text-xs font-bold">{copied ? 'Copied' : 'Copy'}</span>
+          <button 
+            onClick={copyToClipboard}
+            className="flex items-center space-x-2 px-4 py-2 bg-transparent hover:bg-white/5 border border-white/10 text-slate-300 transition active:scale-95"
+          >
+            {copied ? <Check className="w-3 h-3 text-[#00E599]" /> : <Copy className="w-3 h-3" />}
+            <span className="text-xs font-mono font-bold uppercase tracking-wider">{copied ? 'COPIED' : 'COPY'}</span>
           </button>
-          <button onClick={downloadJson} className="flex items-center space-x-2 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 rounded-lg text-white transition shadow-lg shadow-blue-900/20">
-            <Download className="w-4 h-4" />
-            <span className="text-xs font-bold">Download JSON</span>
+          <button 
+            onClick={downloadJson}
+            className="flex items-center space-x-2 px-4 py-2 bg-[#FF1F7D] hover:bg-[#D41464] text-white transition shadow-[0_0_10px_rgba(255,31,125,0.2)] active:scale-95"
+          >
+            <Download className="w-3 h-3" />
+            <span className="text-xs font-mono font-bold uppercase tracking-wider">EXPORT</span>
           </button>
         </div>
       </div>
@@ -77,56 +98,59 @@ export const ResultView: React.FC<Props> = ({ data }) => {
       {view === 'visual' ? (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           <div className="lg:col-span-8 space-y-6">
+            {/* Top Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <EntityCard icon={<Shield className="text-blue-400" />} title="Actors" count={data.threat_actors.length} items={data.threat_actors.map(a => a.name || 'Unknown')} />
-              <EntityCard icon={<Target className="text-rose-400" />} title="Victims" count={data.victims.length} items={data.victims.map(v => v.name || 'Unknown')} />
-              <EntityCard icon={<Bug className="text-emerald-400" />} title="Malware" count={data.malware.length} items={data.malware.map(m => m.name || 'Unknown')} />
+              <EntityCard icon={<Shield className="text-[#3b82f6]" />} title="Threat Actors" count={data.threat_actors.length} items={data.threat_actors.map(a => a.name || 'Unknown')} />
+              <EntityCard icon={<Target className="text-[#FF1F7D]" />} title="Targets" count={data.victims.length} items={data.victims.map(v => v.name || 'Unknown')} />
+              <EntityCard icon={<Bug className="text-[#00E599]" />} title="Malware" count={data.malware.length} items={data.malware.map(m => m.name || 'Unknown')} />
             </div>
 
-            <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6">
-              <div className="flex items-center space-x-2 mb-4">
-                <BookOpen className="w-5 h-5 text-amber-400" />
-                <h3 className="text-lg font-semibold">Techniques (MITRE ATT&CK)</h3>
+            {/* TTPs Panel */}
+            <div className="bg-black/60 backdrop-blur-xl border border-white/10 p-6">
+              <div className="flex items-center space-x-2 mb-4 border-b border-white/5 pb-2">
+                <BookOpen className="w-4 h-4 text-slate-400" />
+                <h3 className="text-sm font-oswald font-bold text-white uppercase tracking-widest">Tactics & Techniques</h3>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {data.ttps.map((ttp, idx) => (
-                  <div key={idx} className="bg-slate-800/40 border border-slate-700/50 p-4 rounded-xl">
-                    <span className="text-xs font-bold bg-amber-900/40 text-amber-400 px-2 py-0.5 rounded border border-amber-800">{ttp.technique_id}</span>
-                    <h4 className="text-sm font-bold text-slate-200 mt-2">{ttp.technique_name}</h4>
-                    <p className="text-xs text-slate-400 mt-1 line-clamp-2">{ttp.description}</p>
+                  <div key={idx} className="bg-white/5 border border-white/5 p-4 hover:border-[#FF1F7D]/50 transition group">
+                    <span className="text-[10px] font-mono font-bold bg-[#FF1F7D]/20 text-[#FF1F7D] px-2 py-0.5 border border-[#FF1F7D]/30">{ttp.technique_id}</span>
+                    <h4 className="text-xs font-bold text-slate-200 mt-2 font-mono">{ttp.technique_name}</h4>
+                    <p className="text-[10px] text-slate-500 mt-1 line-clamp-2 font-mono">{ttp.description}</p>
                   </div>
                 ))}
-                {data.ttps.length === 0 && <div className="col-span-full py-6 text-center text-slate-500 italic text-sm">No specific TTPs identified.</div>}
+                {data.ttps.length === 0 && <div className="col-span-full py-6 text-center text-slate-600 font-mono text-xs uppercase">No TTPs Identified</div>}
               </div>
             </div>
 
-            <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6">
-              <div className="flex items-center justify-between mb-4">
+            {/* Indicators Panel */}
+            <div className="bg-black/60 backdrop-blur-xl border border-white/10 p-6">
+              <div className="flex items-center justify-between mb-4 border-b border-white/5 pb-2">
                 <div className="flex items-center space-x-2">
-                  <Activity className="w-5 h-5 text-blue-400" />
-                  <h3 className="text-lg font-semibold">Network & File Indicators</h3>
+                  <Activity className="w-4 h-4 text-slate-400" />
+                  <h3 className="text-sm font-oswald font-bold text-white uppercase tracking-widest">Detected Indicators</h3>
                 </div>
               </div>
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-sm">
-                  <thead className="text-slate-500 uppercase text-xs font-bold tracking-widest border-b border-slate-800">
+                <table className="w-full text-left">
+                  <thead className="text-slate-500 uppercase text-[10px] font-mono font-bold tracking-widest border-b border-white/10">
                     <tr>
                       <th className="px-4 py-3">Type</th>
                       <th className="px-4 py-3">Value</th>
-                      <th className="px-4 py-3 text-right">Valid</th>
+                      <th className="px-4 py-3 text-right">Integrity</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800">
+                  <tbody className="divide-y divide-white/5">
                     {data.indicators.map((indicator, idx) => {
                       const displayValue = isDefanged ? defangIndicator(indicator.value) : indicator.value;
                       const isValid = validateIndicator(indicator.type as IndicatorType, indicator.value);
                       return (
-                        <tr key={idx} className="hover:bg-slate-800/20 transition group">
-                          <td className="px-4 py-4"><IndicatorBadge type={indicator.type} /></td>
-                          <td className="px-4 py-4 font-mono text-slate-300 text-xs break-all">{displayValue}</td>
-                          <td className="px-4 py-4 text-right">
-                            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${isValid ? 'bg-emerald-900/30 text-emerald-400' : 'bg-rose-900/30 text-rose-400'}`}>
-                              {isValid ? <Check className="w-2.5 h-2.5 mr-1" /> : '!'} {isValid ? 'YES' : 'NO'}
+                        <tr key={idx} className="hover:bg-white/[0.02] transition group">
+                          <td className="px-4 py-3"><IndicatorBadge type={indicator.type} /></td>
+                          <td className="px-4 py-3 font-mono text-slate-300 text-xs break-all group-hover:text-[#FF1F7D] transition-colors">{displayValue}</td>
+                          <td className="px-4 py-3 text-right">
+                            <span className={`inline-flex items-center px-2 py-0.5 text-[9px] font-mono font-bold uppercase tracking-wider ${isValid ? 'text-[#00E599]' : 'text-red-500'}`}>
+                              {isValid ? <Check className="w-3 h-3 mr-1" /> : '!'} {isValid ? 'VERIFIED' : 'INVALID'}
                             </span>
                           </td>
                         </tr>
@@ -139,52 +163,56 @@ export const ResultView: React.FC<Props> = ({ data }) => {
           </div>
 
           <div className="lg:col-span-4 space-y-6">
-            <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6">
-              <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-6">Indicator Mix</h3>
+            {/* Charts & Graphs */}
+            <div className="bg-black/60 backdrop-blur-xl border border-white/10 p-6">
+              <h3 className="text-xs font-oswald font-bold text-slate-400 uppercase tracking-widest mb-6">Telemetry</h3>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
-                    <Pie data={chartData} cx="50%" cy="50%" innerRadius={70} outerRadius={90} paddingAngle={8} dataKey="value" stroke="none">
+                    <Pie data={chartData} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value" stroke="none">
                       {chartData.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
                     </Pie>
-                    <RechartsTooltip contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', border: '1px solid #334155' }} itemStyle={{ color: '#f1f5f9', fontSize: '12px' }} />
+                    <RechartsTooltip 
+                      contentStyle={{ backgroundColor: '#050505', borderRadius: '0px', border: '1px solid #333' }} 
+                      itemStyle={{ color: '#fff', fontSize: '10px', fontFamily: 'JetBrains Mono' }} 
+                    />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
 
-              <div className="mt-10 border-t border-slate-800 pt-6">
+              <div className="mt-8 border-t border-white/10 pt-6">
                 <div className="flex items-center space-x-2 mb-4">
-                  <Link className="w-4 h-4 text-blue-400" />
-                  <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest">Relationships</h3>
+                  <Link className="w-4 h-4 text-slate-400" />
+                  <h3 className="text-xs font-oswald font-bold text-slate-400 uppercase tracking-widest">Graph Linkages</h3>
                 </div>
-                <div className="space-y-3">
+                <div className="space-y-2">
                   {data.relationships.map((rel, idx) => (
-                    <div key={idx} className="p-3 bg-slate-900 border border-slate-800 rounded-xl text-[11px] group hover:border-blue-500/30 transition">
+                    <div key={idx} className="p-3 bg-white/[0.02] border border-white/5 text-[10px] font-mono group hover:border-[#FF1F7D]/30 transition">
                       <div className="flex items-center justify-between">
-                        <span className="text-blue-400 font-bold truncate max-w-[80px]">{rel.source}</span>
-                        <span className="px-1.5 py-0.5 bg-slate-800 rounded text-[9px] text-slate-400 uppercase">{rel.relationship_type}</span>
-                        <span className="text-rose-400 font-bold truncate max-w-[80px]">{rel.target}</span>
+                        <span className="text-[#3b82f6] font-bold truncate max-w-[80px]">{rel.source}</span>
+                        <span className="text-slate-500 uppercase tracking-tighter">--[{rel.relationship_type}]--</span>
+                        <span className="text-[#FF1F7D] font-bold truncate max-w-[80px]">{rel.target}</span>
                       </div>
                     </div>
                   ))}
-                  {data.relationships.length === 0 && <div className="text-center text-slate-500 text-xs py-4">None.</div>}
+                  {data.relationships.length === 0 && <div className="text-center text-slate-600 font-mono text-[10px] uppercase">No Linkages Found</div>}
                 </div>
               </div>
             </div>
 
-            <div className="p-5 bg-blue-900/10 border border-blue-500/20 rounded-2xl">
-              <h4 className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-2 flex items-center">
-                <Shield className="w-3 h-3 mr-1" /> Security Alert
+            <div className="p-5 border border-[#FF1F7D]/20 bg-[#FF1F7D]/5">
+              <h4 className="text-[10px] font-oswald font-bold text-[#FF1F7D] uppercase tracking-widest mb-2 flex items-center">
+                <Shield className="w-3 h-3 mr-1" /> Operational Security
               </h4>
-              <p className="text-[10px] text-slate-500 leading-relaxed">
-                Manually verify all indicators. Use isolated sandbox environments for analysis.
+              <p className="text-[10px] font-mono text-slate-500 leading-relaxed">
+                Indicators are de-fanged by default. Exercise extreme caution when handling live malware hashes.
               </p>
             </div>
           </div>
         </div>
       ) : (
-        <div className="relative bg-slate-950 rounded-2xl border border-slate-800 p-8 font-mono text-sm overflow-auto max-h-[700px]">
-          <pre className="text-emerald-500 leading-relaxed whitespace-pre-wrap">
+        <div className="relative bg-black/80 backdrop-blur-xl border border-white/10 p-8 font-mono text-xs overflow-auto max-h-[700px] custom-scrollbar">
+          <pre className="text-[#00E599] leading-relaxed whitespace-pre-wrap">
             {JSON.stringify(isDefanged ? {
               ...data,
               indicators: data.indicators.map(i => ({ ...i, value: defangIndicator(i.value) }))
@@ -197,19 +225,19 @@ export const ResultView: React.FC<Props> = ({ data }) => {
 };
 
 const EntityCard = ({ icon, title, count, items }: { icon: React.ReactNode, title: string, count: number, items: string[] }) => (
-  <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-5 flex flex-col h-full hover:border-slate-700 transition">
+  <div className="bg-black/60 backdrop-blur-xl border border-white/10 p-5 flex flex-col h-full hover:border-[#FF1F7D]/50 transition group">
     <div className="flex items-center justify-between mb-4">
       <div className="flex items-center space-x-2">
-        <div className="p-1.5 bg-slate-800 rounded-lg">{icon}</div>
-        <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest">{title}</h4>
+        <div className="p-1.5 bg-white/5">{icon}</div>
+        <h4 className="text-xs font-oswald font-bold text-slate-400 uppercase tracking-widest group-hover:text-white transition-colors">{title}</h4>
       </div>
-      <span className="bg-blue-600/20 text-blue-400 px-2 py-0.5 rounded text-xs font-bold">{count}</span>
+      <span className="bg-white/10 text-white px-2 py-0.5 text-[10px] font-mono font-bold border border-white/10">{count}</span>
     </div>
     <div className="flex flex-wrap gap-1.5">
       {items.slice(0, 4).map((item, i) => (
-        <span key={i} className="text-[10px] font-bold bg-slate-800 text-slate-300 px-2 py-1 rounded border border-slate-800/50 truncate max-w-full">{item}</span>
+        <span key={i} className="text-[10px] font-mono font-bold bg-white/[0.02] text-slate-300 px-2 py-1 border border-white/10 truncate max-w-full group-hover:border-[#FF1F7D]/30 transition-colors">{item}</span>
       ))}
-      {items.length > 4 && <span className="text-[9px] font-bold text-slate-600 self-center">+{items.length - 4} more</span>}
+      {items.length > 4 && <span className="text-[9px] font-mono font-bold text-slate-600 self-center">+{items.length - 4}</span>}
     </div>
   </div>
 );

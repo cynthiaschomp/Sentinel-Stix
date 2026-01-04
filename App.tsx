@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { parseThreatReport } from './services/geminiService';
 import { ParseState } from './types';
@@ -10,16 +11,29 @@ import {
   FileText, 
   CloudUpload,
   AlertCircle,
-  Loader2,
   Cpu,
-  RefreshCcw,
   Lock,
   Key,
-  Info
+  Info,
+  Terminal,
+  Activity
 } from 'lucide-react';
 
+// Tactical Loading Skeleton Component
+const TacticalSkeleton = () => (
+  <div className="w-full h-full flex flex-col items-center justify-center space-y-4 animate-pulse">
+    <div className="w-full h-2 bg-slate-800/50 rounded-none"></div>
+    <div className="w-3/4 h-2 bg-slate-800/50 rounded-none"></div>
+    <div className="w-5/6 h-2 bg-slate-800/50 rounded-none"></div>
+    <div className="flex items-center space-x-2 mt-4 text-[#FF1F7D] font-mono text-xs tracking-widest uppercase">
+      <Activity className="w-4 h-4 animate-bounce" />
+      <span>Processing Intelligence...</span>
+    </div>
+  </div>
+);
+
 const App: React.FC = () => {
-  const [inputText, setInputText] = useState('');
+  const [inputText, setInputText] = useState('Input: Operation Alpha\nTarget: Sector 7\n\nSuspected APT activity detected originating from 192.168.1.5 and beaconing to malicious-domain[.]com.'); // Tactical Mock Data
   const [showKeyModal, setShowKeyModal] = useState(false);
   const [hasKey, setHasKey] = useState<boolean | null>(null);
   const [state, setState] = useState<ParseState>({
@@ -73,7 +87,7 @@ const App: React.FC = () => {
       } else {
         setState({ 
           isParsing: false, 
-          error: errorMessage || "Extraction engine failed to process the request.", 
+          error: errorMessage || "Extraction engine failed. Verify input integrity.", 
           result: null 
         });
       }
@@ -125,7 +139,7 @@ Potential Victims Identified:
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0b0f1a] selection:bg-blue-500/30 selection:text-blue-200">
+    <div className="min-h-screen flex flex-col bg-[#050505] selection:bg-[#FF1F7D]/30 selection:text-pink-100">
       {showKeyModal && (
         <ApiKeyModal 
           onActivate={handleActivate} 
@@ -133,144 +147,168 @@ Potential Victims Identified:
         />
       )}
       
-      <header className="border-b border-slate-800 bg-[#0f172a]/80 backdrop-blur-xl sticky top-0 z-50">
+      {/* Header (Command Bar) */}
+      <header className="border-b border-white/10 bg-black/60 backdrop-blur-xl sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <div className="bg-gradient-to-tr from-blue-700 to-indigo-600 p-2.5 rounded-xl shadow-lg shadow-blue-500/20">
-              <ShieldCheck className="w-7 h-7 text-white" />
+            <div className="p-2 border border-[#FF1F7D]/50 bg-[#FF1F7D]/10">
+              <ShieldCheck className="w-6 h-6 text-[#FF1F7D]" />
             </div>
             <div>
-              <h1 className="text-xl font-black tracking-tight text-white flex items-center">
-                SENTINEL<span className="text-blue-500 ml-1">STIX</span>
+              <h1 className="text-2xl font-oswald font-bold tracking-tight text-white uppercase flex items-center">
+                CYNTHIA<span className="text-[#FF1F7D] ml-1">.OS</span>
               </h1>
-              <div className="flex items-center text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] mt-0.5">
-                <Cpu className="w-3 h-3 mr-1 text-blue-500" /> Powered by Gemini 3 Pro
+              <div className="flex items-center text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest mt-0.5">
+                <Cpu className="w-3 h-3 mr-1 text-[#FF1F7D]" /> Tactical CTI // Gemini 3 Pro
               </div>
             </div>
           </div>
           
+          {/* Status Pill Logic */}
           <div className="flex items-center space-x-6">
              <div 
                onClick={() => setShowKeyModal(true)}
-               className={`hidden sm:flex items-center space-x-2 text-[10px] font-bold px-3 py-1.5 border rounded-full cursor-pointer transition-all hover:scale-105 active:scale-95 ${
+               className={`hidden sm:flex items-center space-x-2 text-[10px] font-mono font-bold px-4 py-1.5 border cursor-pointer transition-all hover:scale-95 active:scale-90 ${
                  hasKey 
-                 ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' 
-                 : 'bg-rose-500/10 border-rose-500/20 text-rose-400'
+                 ? 'bg-[#00E599]/10 border-[#00E599] text-[#00E599] shadow-[0_0_10px_rgba(0,229,153,0.2)]' 
+                 : 'bg-red-500/10 border-red-500 text-red-500 animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.2)]'
                }`}
              >
-              <span className={`w-1.5 h-1.5 rounded-full animate-pulse mr-1 ${hasKey ? 'bg-emerald-500' : 'bg-rose-500'}`}></span>
-              {hasKey ? 'API SYSTEM ONLINE' : 'API DISCONNECTED - CONFIGURE NOW'}
+              <div className={`w-1.5 h-1.5 rounded-none mr-2 ${hasKey ? 'bg-[#00E599]' : 'bg-red-500'}`}></div>
+              {hasKey ? 'SYSTEM ONLINE' : 'API DISCONNECTED -- CONFIGURE NOW'}
             </div>
-            <button className="text-slate-400 hover:text-white transition-colors p-2 hover:bg-slate-800 rounded-lg">
+            <button className="text-slate-500 hover:text-[#FF1F7D] transition-colors">
               <History className="w-5 h-5" />
             </button>
           </div>
         </div>
       </header>
 
+      {/* Main Layout: The Active Hero */}
       <main className="flex-1 max-w-7xl mx-auto w-full px-6 py-10 space-y-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+          
+          {/* Left Panel: Tactical Input Console */}
           <div className="lg:col-span-5 space-y-6">
-            <div className="space-y-2">
-              <div className="flex items-center space-x-2 text-xs font-bold text-blue-400 uppercase tracking-widest mb-2">
-                <Lock className="w-3 h-3" /> Secure Analyst Console
+            <div className="space-y-1">
+              <div className="flex items-center space-x-2 text-xs font-mono font-bold text-[#FF1F7D] uppercase tracking-widest mb-1">
+                <Lock className="w-3 h-3" /> Secure Channel
               </div>
-              <h2 className="text-3xl font-black text-white leading-tight">Elite <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-400">CTI Parsing</span></h2>
-              <p className="text-slate-400 text-sm leading-relaxed max-w-md">
-                Paste unstructured threat intel from blogs, forums, or reports. Our reasoning engine extracts compliant STIX 2.1 entities instantly.
-              </p>
+              <h2 className="text-4xl font-oswald font-bold text-white uppercase leading-none">
+                Intel <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF1F7D] to-purple-600">Extraction</span>
+              </h2>
             </div>
 
-            <div className="bg-[#1e293b]/50 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl backdrop-blur-sm group hover:border-blue-500/30 transition-all duration-500">
-              <div className="flex items-center justify-between p-4 border-b border-slate-800 bg-[#0f172a]/60">
+            {/* Smoked Obsidian Panel */}
+            <div className="bg-black/60 backdrop-blur-xl border border-white/10 shadow-2xl overflow-hidden group">
+              <div className="flex items-center justify-between p-3 border-b border-white/10 bg-black/40">
                 <div className="flex items-center space-x-2">
-                  <FileText className="w-4 h-4 text-blue-400" />
-                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Intel Feed</span>
+                  <Terminal className="w-4 h-4 text-[#FF1F7D]" />
+                  <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-slate-400">Raw Data Input</span>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <button onClick={loadExample} className="text-[10px] font-bold text-blue-400 hover:text-blue-300 transition uppercase tracking-wider">Sample</button>
-                  <div className="w-px h-3 bg-slate-800"></div>
-                  <button onClick={handleClear} className="text-[10px] font-bold text-rose-500 hover:text-rose-400 transition uppercase tracking-wider">Clear</button>
+                <div className="flex items-center space-x-4">
+                  <button 
+                    onClick={loadExample}
+                    className="text-[10px] font-mono font-bold text-[#FF1F7D] hover:text-white transition uppercase tracking-wider"
+                  >
+                    Load Mock
+                  </button>
+                  <div className="w-px h-3 bg-white/10"></div>
+                  <button 
+                    onClick={handleClear}
+                    className="text-[10px] font-mono font-bold text-slate-500 hover:text-white transition uppercase tracking-wider"
+                  >
+                    Clear
+                  </button>
                 </div>
               </div>
               
-              <textarea
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-                placeholder="Securely paste your RAW report here for extraction..."
-                className="w-full h-[380px] p-8 bg-transparent text-slate-200 placeholder-slate-700 focus:outline-none resize-none font-mono text-xs leading-relaxed custom-scrollbar"
-              />
+              {/* Tactical Input */}
+              <div className="relative">
+                <textarea
+                  value={inputText}
+                  onChange={(e) => setInputText(e.target.value)}
+                  placeholder="AWAITING INPUT..."
+                  className="w-full h-[400px] p-6 bg-transparent text-slate-300 placeholder-slate-700 focus:outline-none resize-none font-mono text-xs leading-relaxed custom-scrollbar border-b-2 border-transparent focus:border-[#FF1F7D] transition-colors duration-300"
+                />
+              </div>
 
-              <div className="p-6 border-t border-slate-800 bg-[#0f172a]/60 flex items-center justify-between">
+              <div className="p-5 border-t border-white/10 bg-black/40 flex items-center justify-between">
                 <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept=".txt,.md,.json" className="hidden" />
-                <div className="flex space-x-2">
-                  <button onClick={() => fileInputRef.current?.click()} className="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition-all border border-slate-700" title="Upload Text File">
+                <div className="flex space-x-3">
+                  <button 
+                    onClick={() => fileInputRef.current?.click()}
+                    className="p-3 bg-transparent border border-white/10 hover:border-[#FF1F7D] text-slate-400 hover:text-[#FF1F7D] transition-all active:scale-95"
+                    title="Upload"
+                  >
                     <CloudUpload className="w-5 h-5" />
                   </button>
-                  <button onClick={() => setShowKeyModal(true)} className={`p-2.5 rounded-xl transition-all border ${hasKey ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-400' : 'bg-slate-800 border-slate-700 text-slate-300'}`} title="Configure API Key">
+                  <button 
+                    onClick={() => setShowKeyModal(true)}
+                    className={`p-3 border transition-all active:scale-95 ${hasKey ? 'border-[#00E599]/30 text-[#00E599]' : 'border-white/10 text-slate-400 hover:border-[#FF1F7D]'}`}
+                    title="Config"
+                  >
                     <Key className="w-5 h-5" />
                   </button>
                 </div>
 
+                {/* Primary Action Button */}
                 <button 
                   onClick={handleParse}
                   disabled={state.isParsing || !inputText.trim()}
-                  className={`flex-1 ml-4 py-3.5 rounded-2xl font-black flex items-center justify-center space-x-3 transition-all tracking-wider uppercase text-xs ${
+                  className={`flex-1 ml-6 py-4 font-oswald font-bold text-sm tracking-[0.1em] uppercase transition-all duration-100 flex items-center justify-center space-x-3 ${
                     state.isParsing || !inputText.trim() 
-                    ? 'bg-slate-800 text-slate-500 cursor-not-allowed opacity-50' 
-                    : 'bg-blue-600 hover:bg-blue-500 text-white shadow-xl shadow-blue-700/20 active:scale-[0.98]'
+                    ? 'bg-slate-900 text-slate-600 cursor-not-allowed border border-white/5' 
+                    : 'bg-[#FF1F7D] text-white hover:bg-[#D41464] active:scale-[0.98] shadow-[0_0_20px_rgba(255,31,125,0.3)]'
                   }`}
                 >
                   {state.isParsing ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>Reasoning engine active...</span>
-                    </>
+                    <span className="animate-pulse">EXECUTION IN PROGRESS...</span>
                   ) : (
                     <>
                       <Zap className="w-4 h-4 fill-current" />
-                      <span>Process Report</span>
+                      <span>EXECUTE PARSE</span>
                     </>
                   )}
                 </button>
               </div>
             </div>
 
-            <div className="bg-slate-900/50 p-4 rounded-2xl border border-slate-800 flex items-start space-x-3">
+            <div className="flex items-start space-x-3 opacity-60">
               <Info className="w-4 h-4 text-slate-500 mt-0.5" />
-              <p className="text-[10px] text-slate-500 font-medium leading-relaxed">
-                <span className="text-slate-400 font-bold uppercase mr-1">Privacy Notice:</span> Reports are processed by the Gemini API. Do not upload internal PII or classified corporate assets. The system does not cache or store reports after the session ends.
+              <p className="text-[10px] text-slate-500 font-mono leading-relaxed">
+                PRIVACY NOTICE: Reports processed securely via Gemini API. No server-side retention.
               </p>
             </div>
 
             {state.error && (
-              <div className="bg-rose-500/10 border border-rose-500/20 rounded-2xl p-5 flex items-start space-x-4 animate-in slide-in-from-left duration-500">
-                <div className="bg-rose-500/20 p-2 rounded-lg">
-                  <AlertCircle className="w-5 h-5 text-rose-500" />
-                </div>
-                <div>
-                  <h3 className="text-sm font-black text-rose-500 uppercase tracking-wider">Engine Fault</h3>
-                  <p className="text-xs text-rose-300/80 mt-1 font-medium leading-relaxed">{state.error}</p>
-                </div>
+              <div className="bg-red-900/10 border-l-2 border-red-500 p-4 animate-in slide-in-from-left duration-300">
+                <h3 className="text-xs font-oswald font-bold text-red-500 uppercase tracking-wider mb-1">System Fault</h3>
+                <p className="text-xs font-mono text-red-400/80">{state.error}</p>
               </div>
             )}
           </div>
 
+          {/* Right Panel: Output Console */}
           <div className="lg:col-span-7 h-full min-h-[600px]">
-            {state.result ? (
+            {state.isParsing ? (
+               <div className="h-full bg-black/60 backdrop-blur-xl border border-white/10 flex items-center justify-center">
+                  <TacticalSkeleton />
+               </div>
+            ) : state.result ? (
               <ResultView data={state.result} />
             ) : (
-              <div className="h-full flex flex-col items-center justify-center border-2 border-dashed border-slate-800 rounded-3xl p-10 bg-slate-900/10 opacity-60">
-                <div className="w-20 h-20 bg-slate-900 border border-slate-800 rounded-3xl flex items-center justify-center mb-6">
-                  <RefreshCcw className="w-8 h-8 text-slate-700 animate-pulse" />
+              <div className="h-full flex flex-col items-center justify-center border border-dashed border-white/10 bg-white/[0.02] opacity-50">
+                <div className="w-24 h-24 border border-white/10 flex items-center justify-center mb-6">
+                  <Activity className="w-10 h-10 text-slate-700" />
                 </div>
-                <h3 className="text-lg font-bold text-slate-500 uppercase tracking-widest">Awaiting Extraction</h3>
-                <p className="text-slate-600 text-sm mt-2 text-center max-w-xs">
-                  Upload or paste a threat report to see detailed STIX extraction and visualization.
-                </p>
+                <h3 className="text-xl font-oswald font-bold text-slate-600 uppercase tracking-widest">Awaiting Command</h3>
                 {!hasKey && (
-                  <button onClick={() => setShowKeyModal(true)} className="mt-6 text-xs font-bold text-blue-400 hover:underline flex items-center uppercase tracking-widest">
-                    <Key className="w-3 h-3 mr-2" /> Activate Engine First
+                  <button 
+                    onClick={() => setShowKeyModal(true)}
+                    className="mt-6 text-xs font-mono font-bold text-[#FF1F7D] hover:underline flex items-center uppercase tracking-widest"
+                  >
+                    <Key className="w-3 h-3 mr-2" /> Initialize Key
                   </button>
                 )}
               </div>
@@ -279,19 +317,19 @@ Potential Victims Identified:
         </div>
       </main>
 
-      <footer className="border-t border-slate-800 py-12 bg-slate-950/50 backdrop-blur-md">
+      {/* Footer (Legal Deck) */}
+      <footer className="border-t border-white/10 py-8 bg-black">
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="flex items-center space-x-4">
-            <div className="text-xs font-bold text-slate-500 border-l-2 border-blue-600 pl-4 py-1">
-              SENTINEL-STIX OPS <br/>
-              <span className="text-slate-600 uppercase tracking-widest text-[9px]">Zero-Trust Intelligence Environment</span>
-            </div>
+          <div className="text-[10px] text-slate-500 font-mono">
+             <span className="block mb-2 text-slate-400">Privacy Notice: Reports are processed by the Gemini API. Do not upload internal PII or classified corporate assets. The system does not cache or store reports after the session ends.</span>
+             <span>© 2026 Cynthia Schomp | cynthiaschomp.com</span>
           </div>
-          <div className="flex space-x-8 text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">
-            <a href="https://oasis-open.github.io/cti-documentation/stix/intro.html" target="_blank" rel="noopener noreferrer" className="hover:text-blue-500 transition-colors">STIX 2.1 Specs</a>
-            <a href="https://attack.mitre.org/" target="_blank" rel="noopener noreferrer" className="hover:text-blue-500 transition-colors">MITRE ATT&CK</a>
-            <a href="https://ai.google.dev/gemini-api/docs" target="_blank" rel="noopener noreferrer" className="hover:text-blue-500 transition-colors">API Docs</a>
-            <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="hover:text-blue-500 transition-colors">Privacy</a>
+          <div className="flex space-x-4 text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest">
+            <a href="#" className="hover:text-[#FF1F7D] transition-colors">Privacy Policy</a>
+            <span className="text-slate-700">|</span>
+            <a href="#" className="hover:text-[#FF1F7D] transition-colors">TOS</a>
+            <span className="text-slate-700">|</span>
+            <a href="#" className="hover:text-[#FF1F7D] transition-colors">Legal</a>
           </div>
         </div>
       </footer>
